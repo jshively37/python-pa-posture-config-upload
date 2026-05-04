@@ -44,3 +44,11 @@ def create_token():
 
 if __name__ == "__main__":
     create_token()
+
+    # Get link to upload config
+
+    # Upload config
+
+    # Wait for config to be processed
+
+    # Return results
