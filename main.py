@@ -12,6 +12,11 @@ HEADERS = {
     "Accept": "application/json",
 }
 
+UPLOAD_HEADERS = {
+    "Content-Type": "plain/text",
+    "Content-Encoding": "gzip"
+}
+
 AUTH_HEADERS = {
     "Content-Type": "application/x-www-form-urlencoded",
     "Accept": "application/json",
@@ -41,11 +46,34 @@ def create_token():
     HEADERS.update({"Authorization": f'Bearer {token["access_token"]}'})
 
 
+def create_upload_link():
+    url = f"{BASE_API_URL}/posture/checks/v1/reports/config-file-upload"
+    payload = {
+        "delete_after_processing": True
+    }
+    try:
+        response = requests.request(method="POST", url=url, headers=HEADERS, json=payload)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        print(f"Error creating upload link: {e}")
+        return None
+
+
+def upload_config(upload_url, config_file):
+    with open(config_file, "rb") as f:
+        response = requests.request(method="PUT", url=upload_url, headers=UPLOAD_HEADERS, data=f)
+    print(response.raise_for_status())
+
 
 if __name__ == "__main__":
+    config_file = f"{CONFIG_FOLDER}candidate-config.xml"
     create_token()
 
     # Get link to upload config
+    upload_url = create_upload_link()
+    print(upload_url)
+    # upload_config(upload_url, config_file)
 
     # Upload config
 
