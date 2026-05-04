@@ -20,6 +20,9 @@ AUTH_HEADERS = {
 # Time to sleep between requests in seconds.
 SLEEP_TIME = 15
 
+# Config folder
+CONFIG_FOLDER = "configs.local/"
+
 load_dotenv()
 TSG_ID = os.environ.get("TSG_ID")
 CLIENT_ID = os.environ.get("CLIENT_ID")

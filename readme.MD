@@ -16,8 +16,7 @@ By using this software, you agree that:
 Use at your own discretion.
 
 ## Limitations:
-* Not using async and calls will be slow.
-* No error checking.
+* MVP version
 
 ## Creating a service account in Prisma Access
 
