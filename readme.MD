@@ -1,6 +1,6 @@
 # Overview
 
-**WIP**
+**Work In Progress**
 
 This Python script allows you to upload a configuration file from a Palo Alto NGFW and run it against the Strata Cloud Manager Posture Manager.
 
