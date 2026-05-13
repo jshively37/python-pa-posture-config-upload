@@ -1,4 +1,5 @@
 import os
+from pprint import pprint as pp
 from time import sleep
 import requests
 
@@ -12,10 +13,7 @@ HEADERS = {
     "Accept": "application/json",
 }
 
-UPLOAD_HEADERS = {
-    "Content-Type": "plain/text",
-    "Content-Encoding": "gzip"
-}
+UPLOAD_HEADERS = {"Content-Type": "plain/text", "Content-Encoding": "gzip"}
 
 AUTH_HEADERS = {
     "Content-Type": "application/x-www-form-urlencoded",
@@ -48,11 +46,11 @@ def create_token():
 
 def create_upload_link():
     url = f"{BASE_API_URL}/posture/checks/v1/reports/config-file-upload"
-    payload = {
-        "delete_after_processing": True
-    }
+    payload = {"delete_after_processing": True}
     try:
-        response = requests.request(method="POST", url=url, headers=HEADERS, json=payload)
+        response = requests.request(
+            method="POST", url=url, headers=HEADERS, json=payload
+        )
         response.raise_for_status()
         return response.json()
     except requests.RequestException as e:
@@ -61,9 +59,29 @@ def create_upload_link():
 
 
 def upload_config(upload_url, config_file):
+    print(f"Uploading config file {config_file} to {upload_url}")
     with open(config_file, "rb") as f:
-        response = requests.request(method="PUT", url=upload_url, headers=UPLOAD_HEADERS, data=f)
-    print(response.raise_for_status())
+        try:
+            response = requests.request(
+                method="PUT", url=upload_url, headers=UPLOAD_HEADERS, data=f
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as e:
+            print(f"Error uploading config: {e}")
+            return None
+
+
+def get_task_id(task_id):
+    print(f"Getting task status for task id {task_id}")
+    url = f"{BASE_API_URL}/posture/checks/v1/reports/{str(task_id)}/bpa-result"
+    try:
+        response = requests.request(method="GET", url=url, headers=HEADERS)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        print(f"Error getting task status: {e}")
+        return None
 
 
 if __name__ == "__main__":
@@ -71,12 +89,10 @@ if __name__ == "__main__":
     create_token()
 
     # Get link to upload config
-    upload_url = create_upload_link()
-    print(upload_url)
-    # upload_config(upload_url, config_file)
-
-    # Upload config
+    created_job = create_upload_link()
+    print(created_job)
+    upload_config(created_job["upload_url"], config_file)
 
     # Wait for config to be processed
-
-    # Return results
+    task_status = get_task_id(created_job["task_id"])
+    print(task_status)
