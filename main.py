@@ -59,17 +59,18 @@ def create_upload_link():
 
 
 def upload_config(upload_url, config_file):
-    print(f"Uploading config file {config_file} to {upload_url}")
     with open(config_file, "rb") as f:
-        try:
-            response = requests.request(
-                method="PUT", url=upload_url, headers=UPLOAD_HEADERS, data=f
-            )
-            response.raise_for_status()
-            return response.json()
-        except requests.RequestException as e:
-            print(f"Error uploading config: {e}")
-            return None
+        config_data = f.read()
+
+    try:
+        response = requests.request(
+            method="PUT", url=upload_url, headers=UPLOAD_HEADERS, data=config_data
+        )
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        print(f"Error uploading config: {e}")
+        return None
 
 
 def get_task_id(task_id):
